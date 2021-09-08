@@ -1,0 +1,10 @@
+amqp==5.0.6
+arrow==1.1.1
+celery==5.1.2
+Django==3.2.7
+django-celery-beat==2.2.1
+django-timezone-field==4.2.1
+polyline==1.4.0
+psycopg2==2.9.1
+social-auth-app-django==5.0.0
+stravalib==0.10.4
