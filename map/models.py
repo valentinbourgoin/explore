@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.gis.db import models as geo_models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.gis.geos import Polygon, Point
@@ -7,82 +8,89 @@ import math
 from explore import settings
 
 '''
-Map
+Grid
 '''
-class Map(geo_models.Model):
-    STATUS_IN_PROGRESS = "IN_PROGRESS"
-    STATUS_FINISHED = "FINISHED"
+class Grid(geo_models.Model):
+    SATUS_OPENED = "OPENED"
+    STATUS_CLOSED = "CLOSED"
     STATUS_CHOICES = [
-        (STATUS_IN_PROGRESS, _("In progress")),
-        (STATUS_FINISHED, _("Finished")),
+        (SATUS_OPENED, _("Opened")),
+        (STATUS_CLOSED, _("Closed")),
     ]
 
-    user = models.ForeignKey(
-        "auth.user", 
-        on_delete=models.CASCADE, 
-        related_name="maps"
+    registered_users = models.ManyToManyField(
+        "auth.user",
+        related_name="registered_grids"
     )
-    level = models.IntegerField(default=1)
+    name = models.CharField(max_length=255)
+    number_of_tiles_per_side = models.PositiveIntegerField(
+        default=settings.MIN_NUMBER_OF_TILES_PER_SIDE,
+        validators=[
+            MinValueValidator(settings.MIN_NUMBER_OF_TILES_PER_SIDE), 
+            MaxValueValidator(settings.MAX_NUMBER_OF_TILES_PER_SIDE)
+        ]
+    )
     center_point = geo_models.PointField()
+    tile_size = models.FloatField(
+        default=settings.DEFAULT_TILE_PERIMETER
+    )
     status = models.CharField(
         max_length=12,
         choices=STATUS_CHOICES,
-        default=STATUS_IN_PROGRESS,
+        default=SATUS_OPENED,
     )
     created_at = models.DateTimeField(auto_now=True)
     last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return u"Map Level %d - %s" % (self.level, self.user)
+        return u"%s (%d tiles)" % (self.name, self.number_of_tiles_per_side)
 
-    def get_number_of_zones_per_slide(self):
-        return (settings.MIN_NUMBER_OF_ZONES_PER_SIDE * self.level)
-
-    def get_total_number_of_zones(self):
-        return self.get_number_of_zones_per_slide()**2
+    def get_total_number_of_tiles(self):
+        return self.number_of_tiles_per_side**2
 
     def save(self, *args, **kwargs):
+        super(Grid, self).save(*args, **kwargs)
+
         # @todo : Si le point central change ? 
-        if (not self.zones.exists()):
+        if (not self.tiles.exists()):
             print(u"Zones creation around %s" % self.center_point)
-            for i in range(self.get_total_number_of_zones()):
+            for i in range(self.get_total_number_of_tiles()):
                 print(u"Creating zone %d" % i)
-                zone = Zone()
-                zone.map = self
-                zone.map_position = i
+                tile = Tile()
+                tile.grid = self
+                tile.grid_position = i
                 # @todo : use signals + mixin 
-                nb = self.get_number_of_zones_per_slide()
-                perimeter = settings.ZONE_PERIMETER
+                perimeter = self.tile_size
+                nb = self.number_of_tiles_per_side
                 xmin = self.center_point.x - ((nb / 2) * perimeter) + (math.floor(i / nb) * perimeter)
                 ymin = self.center_point.y - ((nb / 2) * perimeter) + (i % nb * perimeter)  
                 bbox = (xmin, ymin, xmin + perimeter, ymin + perimeter)
-                zone.points = Polygon.from_bbox(bbox)
+                tile.points = Polygon.from_bbox(bbox)
 
-                print(zone.points)
-                zone.save()
-        super(Map, self).save(*args, **kwargs)
+                print(tile.points)
+                tile.save()
 
 
 '''
-Zone 
+Tile 
 '''
-class Zone(geo_models.Model):
-    STATUS_LOCKED = 0
-    STATUS_UNLOCKED = 1
+class Tile(geo_models.Model):
+    STATUS_UNLOCKED = 0
+    STATUS_LOCKED = 1
     STATUS_CHOICES = [
         (STATUS_LOCKED, _('Locked')),
         (STATUS_UNLOCKED, _('Unlocked'))
     ]
-    map = models.ForeignKey(
-        Map, 
+    grid = models.ForeignKey(
+        Grid, 
         on_delete=models.CASCADE,
-        related_name="zones"
+        related_name="tiles"
     )
     points = geo_models.PolygonField()
-    map_position = models.IntegerField()
+    grid_position = models.PositiveIntegerField()
     status = models.IntegerField(
         choices=STATUS_CHOICES, 
-        default=STATUS_LOCKED
+        default=STATUS_UNLOCKED
     )
     activity_related = models.ForeignKey(
         "core.activity", 
@@ -92,4 +100,9 @@ class Zone(geo_models.Model):
     )
 
     def __str__(self):
-        return u"Zone %d - %s" % (self.map_position, self.map)
+        return u"Tile %s n°%d - (%s)" % (self.grid, self.grid_position, self.status)
+
+    def lock(self, activity): 
+        self.status = self.STATUS_LOCKED
+        self.activity_related = activity
+        self.save()

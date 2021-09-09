@@ -42,7 +42,7 @@ class Activity(geo_models.Model):
         return self
 
     def update_encoded_polyline(self, encoded_polyline):
-        decoded_polyline = polyline.decode(encoded_polyline)
+        decoded_polyline = polyline.decode(encoded_polyline, geojson=True)
         ls = LineString(decoded_polyline)
         self.polylines = ls
 

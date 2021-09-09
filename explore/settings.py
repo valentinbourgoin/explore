@@ -166,5 +166,6 @@ SOCIAL_AUTH_STRAVA_SCOPE = ['activity:read_all']
 SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
 
 # Explore conf 
-MIN_NUMBER_OF_ZONES_PER_SIDE = 3 # Level 1 : 3x3 grid 
-ZONE_PERIMETER = .001 # Zone perimeter : 0.001 degree = 111m approx
+MIN_NUMBER_OF_TILES_PER_SIDE = 6 # 6x6 grid 
+MAX_NUMBER_OF_TILES_PER_SIDE = 64 # 64x64 grid 
+DEFAULT_TILE_PERIMETER = .001 # Zone perimeter : 0.001 degree = 111m approx
