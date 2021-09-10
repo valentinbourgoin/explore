@@ -8,3 +8,9 @@ polyline==1.4.0
 psycopg2==2.9.1
 social-auth-app-django==5.0.0
 stravalib==0.10.4
+django-leaflet==0.28.1
+djangorestframework==3.12.4
+markdown==3.3.4
+django-filter==2.4.0
+djangorestframework-gis==0.17
+Pillow==8.3.2

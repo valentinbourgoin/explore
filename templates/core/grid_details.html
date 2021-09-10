@@ -1,0 +1,47 @@
+{% load leaflet_tags %}
+<head>
+    {% leaflet_js %}
+    {% leaflet_css %}
+    <style>
+    .leaflet-container { height: 100%; }
+    </style>
+    <script>
+        var dataurl = '{% url "api_tiles" grid.id %}';
+
+        function getStyleFromFeature(feature) {
+          var style = {
+            "color": "#666", 
+            "weight": 1,
+            "opacity": .7
+          }; 
+          if (feature.properties.status == 1) {
+            style.color = '#FF0000'; 
+            style.opacity = .9;
+          }
+          return style;
+        }
+  
+        window.addEventListener("map:init", function (event) {
+          var map = event.detail.map;
+          fetch(dataurl)
+            .then(function(resp) {
+              return resp.json();
+            })
+            .then(function(data) {
+              var geoJson = L.geoJson(data, {
+                style: getStyleFromFeature,
+                onEachFeature: function onEachFeature(feature, layer) {
+                  var props = feature.properties;
+                  // console.log(props);
+                  //var content = `<img width="300" src="${props.picture_url}"/><h3>${props.title}</h3><p>${props.description}</p>`;
+                  //layer.bindPopup(content);
+              }});
+              geoJson.addTo(map);
+              map.fitBounds(geoJson.getBounds());
+            });
+        });
+      </script>
+</head>
+<body>
+    {% leaflet_map "grid" %}
+</body>

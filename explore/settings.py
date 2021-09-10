@@ -40,8 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'social_django',
     'django_celery_beat',
+    'leaflet',
+    'rest_framework',
+    'rest_framework_gis',
 
     'core', 
+    'api',
     'map'
 ]
 
@@ -156,6 +160,15 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Django rest framework
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
+AUTH_USER_MODEL = 'core.User'
 
 # Strava auth
 SOCIAL_AUTH_STRAVA_KEY = '3032'

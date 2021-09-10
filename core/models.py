@@ -1,12 +1,16 @@
 from django.db import models
 from django.contrib.gis.db import models as geo_models
+from django.contrib.auth.models import AbstractUser
 
 import polyline
 from django.contrib.gis.geos import LineString
 
+class User(AbstractUser):
+    avatar = models.ImageField()
+
 class Activity(geo_models.Model):
     user = models.ForeignKey(
-        'auth.user', 
+        User, 
         on_delete=models.CASCADE, 
         related_name='activities'
     )

@@ -1,8 +1,6 @@
-from django.contrib.auth.models import User 
-
 from explore.celery import app
 
-from core.models import Activity
+from core.models import Activity, User
 from .models import Grid, Tile
 
 @app.task 

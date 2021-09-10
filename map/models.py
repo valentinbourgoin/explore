@@ -6,6 +6,7 @@ from django.contrib.gis.geos import Polygon, Point
 import math
 
 from explore import settings
+from core.models import User
 
 '''
 Grid
@@ -19,7 +20,7 @@ class Grid(geo_models.Model):
     ]
 
     registered_users = models.ManyToManyField(
-        "auth.user",
+        User,
         related_name="registered_grids"
     )
     name = models.CharField(max_length=255)

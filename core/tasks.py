@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User 
 from requests.exceptions import HTTPError
 from stravalib.client import Client 
 
@@ -6,8 +5,9 @@ import arrow
 
 from explore.celery import app
 
-from .models import Activity
+from .models import Activity, User
 from core.mixins import StravaClientMixin
+from map.tasks import process_activity_tails
 
 @app.task
 def get_strava_activities_by_user(user_id, days=None):
@@ -51,6 +51,7 @@ def get_strava_activity_details(activity_id):
     client = StravaClientMixin().get_strava_client(activity.user)
     act = client.get_activity(activity.external_id)
     activity.update_encoded_polyline(act.map.polyline)
+    process_activity_tails.delay(activity_id=activity_id)
 
 
 @app.task
@@ -60,5 +61,5 @@ def retrieve_activities(days=None):
     ).values_list('id', flat=True)
 
     for user in users: 
-        get_strava_activities_by_user.delay(user_id=user, days=1)
+        get_strava_activities_by_user.delay(user_id=user, days=days)
         print(u"Getting activities for user %d" % user)
