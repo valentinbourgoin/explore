@@ -29,7 +29,7 @@ else:
     DEBUG = True
 
 ALLOWED_HOSTS = [
-    'explore-run.herokuapp.com',
+    'explore-adv.herokuapp.com',
     'localhost',
 ]
 
