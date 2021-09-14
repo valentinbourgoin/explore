@@ -90,4 +90,4 @@ celerybeat-schedule.db
 
 # Upload
 media/upload/*
-static/*
+explore/staticfiles/*
