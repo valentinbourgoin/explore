@@ -1,12 +1,35 @@
 {% load leaflet_tags %}
+{% load static %}
+
 <head>
     {% leaflet_js %}
     {% leaflet_css %}
     <style>
     .leaflet-container { height: 100%; }
+    .map_info {
+      background: white;
+      position: fixed;
+      z-index: 1000;
+      top: 0; 
+      right: 0;
+      width: 200px;
+      padding: 20px;
+      text-align: center; 
+    }
     </style>
     <script>
         var dataurl = '{% url "api_tiles" grid.id %}';
+
+        function isCurrentUser(user) {
+          if (user && user.username === '{{ request.user.username }}') {
+            return true;
+          }
+          return false;
+        }
+
+        function isTileLocked(tile) {
+          return tile.status === 1;
+        }
 
         function getStyleFromFeature(feature) {
           var style = {
@@ -14,9 +37,12 @@
             "weight": 1,
             "opacity": .7
           }; 
-          if (feature.properties.status == 1) {
-            style.color = '#FF0000'; 
+          if (isTileLocked(feature.properties)) {
+            style.color = '#fc4103'; 
             style.opacity = .9;
+            if (isCurrentUser(feature.properties.activity_related.user)) {
+              style.color = '#fcba03'
+            }
           }
           return style;
         }
@@ -31,10 +57,18 @@
               var geoJson = L.geoJson(data, {
                 style: getStyleFromFeature,
                 onEachFeature: function onEachFeature(feature, layer) {
-                  var props = feature.properties;
-                  // console.log(props);
-                  //var content = `<img width="300" src="${props.picture_url}"/><h3>${props.title}</h3><p>${props.description}</p>`;
-                  //layer.bindPopup(content);
+                  if (isTileLocked(feature.properties)) {
+                    var activity = feature.properties.activity_related;
+                    date = activity.start_date;
+                    var user = activity.user;
+                    
+                    var popup = `<div class="popup"><img src="${user.avatar}" width="100"/><p style="text-align:center;">👑 ${user.username}<br />⌚️ ${date}</p></div>`;
+                    layer.bindPopup(popup);
+
+                    // var imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Sydney_Opera_House_-_Dec_2008.jpg/1024px-Sydney_Opera_House_-_Dec_2008.jpg';
+                    // L.imageOverlay(imageUrl, feature.geometry.coordinates).addTo(map);
+                  }
+                  
               }});
               geoJson.addTo(map);
               map.fitBounds(geoJson.getBounds());
@@ -44,4 +78,11 @@
 </head>
 <body>
     {% leaflet_map "grid" %}
+    <div class="map_info">
+      <h1>{{ grid.name }}</h1>
+      <p>
+        Score : {{ score }} <br />
+        Tiles: {{ grid.get_number_of_available_tiles }} / {{ grid.get_total_number_of_tiles }}
+      </p>
+    </div>
 </body>

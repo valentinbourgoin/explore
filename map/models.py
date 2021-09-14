@@ -48,6 +48,9 @@ class Grid(geo_models.Model):
 
     def get_total_number_of_tiles(self):
         return self.number_of_tiles_per_side**2
+    
+    def get_number_of_available_tiles(self):
+        return self.tiles.filter(status=Tile.STATUS_UNLOCKED).count()
 
     def save(self, *args, **kwargs):
         super(Grid, self).save(*args, **kwargs)

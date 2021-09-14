@@ -14,7 +14,7 @@ class SimpleActivitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Activity
-        fields = ['user', 'activity_type']
+        fields = ['user', 'activity_type', 'start_date']
 
 class TileSerializer(GeoFeatureModelSerializer):
     activity_related = SimpleActivitySerializer(many=False, read_only=True)

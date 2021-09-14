@@ -6,7 +6,7 @@ import polyline
 from django.contrib.gis.geos import LineString
 
 class User(AbstractUser):
-    avatar = models.ImageField()
+    avatar = models.ImageField(upload_to="avatar")
 
 class Activity(geo_models.Model):
     user = models.ForeignKey(
