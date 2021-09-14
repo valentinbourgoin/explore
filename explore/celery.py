@@ -14,6 +14,10 @@ app = Celery('explore')
 #   should have a `CELERY_` prefix.
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
+if os.environ.get('ENV') == 'PRODUCTION':
+    app.conf.update(BROKER_URL=os.environ['REDIS_URL'],
+                    CELERY_RESULT_BACKEND=os.environ['REDIS_URL'])
+
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
