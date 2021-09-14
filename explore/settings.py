@@ -23,10 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-igdqx)+yi3aqnjg4^cta8(z48gk-zr-n2rr8x_bybla#bvcuul')
 
-if os.environ.get('ENV') == 'PRODUCTION':
-    DEBUG = False
-else:
-    DEBUG = True
+DEBUG = os.environ.get('DEBUG', True)
 
 ALLOWED_HOSTS = [
     'explore-adv.herokuapp.com',
