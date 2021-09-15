@@ -13,6 +13,7 @@ from map.tasks import process_activity_tails
 def get_strava_activities_by_user(user_id, days=None):
     print(u"Getting order for user %d" % user_id)
     user = User.objects.get(id=user_id)
+    #todo Refacto
     social = user.social_auth.filter(provider='strava')
 
     if (not social.exists()):
@@ -41,6 +42,7 @@ def get_strava_activities_by_user(user_id, days=None):
                 get_strava_activity_details.delay(activity_id=act.id)
 
     except HTTPError as e:
+        # todo : reach limit
         # social.get().delete()
         print(e)
 
