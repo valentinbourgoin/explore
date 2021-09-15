@@ -1,0 +1,15 @@
+<head>
+</head>
+<body>
+    <a href="{% url "social:begin" "strava" %}">Strava Connect</a>
+    {% if user.is_authenticated %}
+    Choose your grid
+    <ul>
+        {% for grid in user.registered_grids.all %}
+        <li>
+            <a href="{% url 'grid_details' grid.id %}">{{ grid.name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</body>
