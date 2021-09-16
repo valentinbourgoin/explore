@@ -5,8 +5,13 @@ import Container from '@material-ui/core/Container'
 import Button from '@material-ui/core/Button';
 
 const Login: NextPage = () => {
-    const socialAuth = (provider) => {
-        console.log(provider)
+    const handleStravaAuth = () => {
+        if (window) {
+            const clientId = 3032;
+            const redirectUrl = "http://localhost:3000/redirect";
+            const scope = ['activity:read_all'];
+            window.location.replace(`http://www.strava.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUrl}/exchange_token&approval_prompt=force&scope=${scope}`);
+        }
     }
 
     return (
@@ -19,8 +24,8 @@ const Login: NextPage = () => {
                     <li>
                         <Button
                             variant="contained" 
-                            onClick={socialAuth('strava')}
                             style={{background: "rgb(252, 42, 0)", color: "white"}}
+                            onClick={() => { handleStravaAuth() }}
                         >
                             Se connecter avec Strava
                         </Button>

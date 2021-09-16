@@ -30,7 +30,6 @@ ALLOWED_HOSTS = [
     'localhost',
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,11 +40,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'social_django',
+    'django.contrib.sites',
     'django_celery_beat',
     'leaflet',
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_gis',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.strava',
+    'dj_rest_auth.registration',
 
     'core', 
     'api',
@@ -53,13 +58,12 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'api.middlewares.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
@@ -122,30 +126,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.strava.StravaOAuth',
     'django.contrib.auth.backends.ModelBackend',
-    'rest_framework_simplejwt.authentication.JWTAuthentication',
-)
-
-SOCIAL_AUTH_AUTHENTICATION_BACKENDS = [
-    'social_core.backends.strava.StravaOAuth',
-]
-
-SOCIAL_AUTH_PIPELINE = (
-    'social_core.pipeline.social_auth.social_details',
-    'social_core.pipeline.social_auth.social_uid',
-    'social_core.pipeline.social_auth.social_user',
-    'social_core.pipeline.user.get_username',
-    'social_core.pipeline.social_auth.associate_by_email',
-    'social_core.pipeline.user.create_user',
-    'social_core.pipeline.social_auth.associate_user',
-    'social_core.pipeline.social_auth.load_extra_data',
-    'social_core.pipeline.user.user_details',
 )
 
 LOGIN_REDIRECT_URL = '/'
-
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -187,15 +171,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 }
 
 AUTH_USER_MODEL = 'core.User'
 
+# Django sites
+SITE_ID = 1
+
 # Strava auth
-SOCIAL_AUTH_STRAVA_KEY = '3032'
-SOCIAL_AUTH_STRAVA_SECRET = 'd89b6f058a6edb745ed579c21ac8764b914f1ff4'
-SOCIAL_AUTH_STRAVA_SCOPE = ['activity:read_all']
+# SOCIAL_AUTH_STRAVA_KEY = '3032'
+# SOCIAL_AUTH_STRAVA_SECRET = 'd89b6f058a6edb745ed579c21ac8764b914f1ff4'
+# SOCIAL_AUTH_STRAVA_SCOPE = ['activity:read_all']
 
 # Spatialite
 SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'

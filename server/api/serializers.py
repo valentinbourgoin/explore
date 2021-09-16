@@ -7,7 +7,7 @@ from map.models import Tile
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'avatar']
+        fields = ['username', 'avatar']
 
 class SimpleActivitySerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False, read_only=True)
