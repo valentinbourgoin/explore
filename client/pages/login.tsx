@@ -2,18 +2,10 @@ import type { NextPage } from 'next'
 
 import styled from 'styled-components'
 import Container from '@material-ui/core/Container'
-import Button from '@material-ui/core/Button';
+
+import StravaAuth from '../components/strava-auth'
 
 const Login: NextPage = () => {
-    const handleStravaAuth = () => {
-        if (window) {
-            const clientId = 3032;
-            const redirectUrl = "http://localhost:3000/redirect";
-            const scope = ['activity:read_all'];
-            window.location.replace(`http://www.strava.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUrl}/exchange_token&approval_prompt=force&scope=${scope}`);
-        }
-    }
-
     return (
         <LoginWrapper img="/images/banner.jpeg">
             <Container maxWidth="sm">
@@ -22,13 +14,7 @@ const Login: NextPage = () => {
                 <p>Lorem ipsum dolor</p>
                 <ul>
                     <li>
-                        <Button
-                            variant="contained" 
-                            style={{background: "rgb(252, 42, 0)", color: "white"}}
-                            onClick={() => { handleStravaAuth() }}
-                        >
-                            Se connecter avec Strava
-                        </Button>
+                        <StravaAuth />
                     </li>
                 </ul>
                 </LoginForm>

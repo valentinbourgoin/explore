@@ -1,10 +1,9 @@
 import axios from "axios";
 
-// @todo : get from env
-const API_URL = "http://localhost:8000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 class AuthService {
-    cleanUpAuthToken = (str) => {
+    cleanUpAuthToken = (str: string) => {
         return str.split("&")[1].slice(5);
     };
 

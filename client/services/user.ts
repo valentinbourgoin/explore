@@ -1,8 +1,7 @@
 import axios from "axios"
 import AuthService from './auth'
 
-// @todo : get from env
-const API_URL = "http://localhost:8000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 class UserService {
 
