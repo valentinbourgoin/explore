@@ -15,35 +15,62 @@ const Map = dynamic(
 
 const Grid: NextPage = () => {
   const router = useRouter()
-  const [grid, setGrid] = useState([]);
+  const [grid, setGrid] = useState();
+  const [tiles, setTiles] = useState();
 
   const { gridId } = router.query
   
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await GridService.getGridDetails(gridId)
-      setGrid(result);
+    const fetchGrid = async () => {
+      const gridDetails = await GridService.getGridDetails(gridId)
+      setGrid(gridDetails);
     };
 
+    const fetchTiles = async () => {
+      const tiles = await GridService.getGridTiles(gridId)
+      setTiles(tiles)
+    }
+
     if (gridId) {
-      fetchData();
+      fetchGrid();
+      fetchTiles();
     }
   }, [ gridId ]);
 
 
   return (
     <>
-      <Container maxWidth="sm">
-        <h1>Grid</h1>
-        <p>LaLALLALA</p>
-        <p>LAL</p>
-        <p>LAL</p>
-        <h1>{grid.name}</h1>
-        <Map grid={grid} />
-      </Container>
+    { grid && tiles && 
+      <React.Fragment>
+        <MapInfos>
+          <h1>{grid.name}</h1>
+        </MapInfos>
+        <MapWrapper>
+            <Map grid={grid} tiles={tiles} />
+        </MapWrapper>
+      </React.Fragment>
+    }
     </>
   )
 
 }
+
+const MapInfos = styled.div`
+  position: absolute;
+  background: white;
+  padding: 3rem;
+  right: 0; 
+  top: 0;
+  z-index: 1000;
+`
+
+const MapWrapper = styled.div`
+  height: calc(100vh - 5rem);
+  width: 100%;
+
+  .leaflet-container {
+    height: 100%;
+  }
+`
 
 export default Grid

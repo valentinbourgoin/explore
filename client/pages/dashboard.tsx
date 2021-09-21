@@ -24,9 +24,7 @@ const Dashboard: NextPage = () => {
     <>
       <Container maxWidth="sm">
         <h1>Dashboard</h1>
-        <p>LaLALLALA</p>
-        <p>LAL</p>
-        <p>LAL</p>
+        <p>Grids ouvertes</p>
         <ul>
         {grids.map((item, i) => (
           <li key={i}>

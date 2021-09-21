@@ -1,6 +1,8 @@
 import type { AppProps } from 'next/app'
 import { ThemeProvider } from '@material-ui/core/styles';
 
+import styled from 'styled-components'
+
 import theme from '../theme/theme'
 import GlobalStyle from '../theme/global'
 
@@ -11,8 +13,16 @@ function Explore({ Component, pageProps }: AppProps) {
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <Nav />
-      <Component {...pageProps} />
+      <Wrapper>
+        <Component {...pageProps} />
+      </Wrapper>
     </ThemeProvider>
   )
 }
+
+const Wrapper = styled.div`
+  position: relative;
+  top: 5rem;
+`
+
 export default Explore
