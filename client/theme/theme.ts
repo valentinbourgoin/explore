@@ -27,4 +27,7 @@ export default createTheme({
       dark: "#772f08",
     },
   },
+  components: {
+    
+  }
 });

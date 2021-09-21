@@ -12,7 +12,7 @@ function Explore({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-      <Nav />
+      <Nav user={{}} />
       <Wrapper>
         <Component {...pageProps} />
       </Wrapper>
@@ -22,7 +22,7 @@ function Explore({ Component, pageProps }: AppProps) {
 
 const Wrapper = styled.div`
   position: relative;
-  top: 5rem;
+  top: 4rem;
 `
 
 export default Explore
