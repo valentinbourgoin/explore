@@ -5,6 +5,8 @@ import Image from 'next/image'
 
 import styled from 'styled-components'
 
+import Nav from '../components/nav'
+
 import logoSmall from '../public/images/logo-small.png'
 
 const Home: NextPage = () => {
@@ -22,6 +24,15 @@ const Home: NextPage = () => {
       <Head>
         <title>Explore</title>
       </Head>
+
+      <Nav 
+        color="transparent"
+        changeColorOnScroll={{
+          height: 200,
+          color: "white",
+        }}
+      />
+
       <FullContainer>
         <video ref={video} 
           autoPlay 
@@ -36,6 +47,34 @@ const Home: NextPage = () => {
           <h1>Sortez des sentiers battus</h1>
           <h2>Courrez, pédalez, marchez, nagez, partez à l'aventure. Courrez, pédalez, marchez, nagez, partez à l'aventure.</h2>
         </BaseLine>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
+        <p>Lorem ispsum</p>
       </FullContainer>
     </div>
   )

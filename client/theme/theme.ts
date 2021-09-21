@@ -1,14 +1,5 @@
 import { createTheme } from '@material-ui/core/styles';
 
-// Default theme
-// export default {
-//     colors: {
-//         primary: "#E6B91E",
-//         accent: "#B6490D",
-//         default: "#1B180E"
-//     },
-// };
-
 // MaterialUI theme
 export default createTheme({
   palette: {
