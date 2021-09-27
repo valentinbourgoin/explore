@@ -14,12 +14,10 @@ def get_strava_activities_by_user(user_id, days=None):
     print(u"Getting order for user %d" % user_id)
     user = User.objects.get(id=user_id)
     #todo Refacto
-    social = user.social_auth.filter(provider='strava')
-
-    if (not social.exists()):
+    client = StravaClientMixin().get_client(user)
+    if (not client):
+        print (u'%s has no social token', user)
         return None
-    
-    client = StravaClientMixin().get_strava_client(user)
 
     if (days): 
         end = arrow.utcnow()
@@ -50,7 +48,7 @@ def get_strava_activities_by_user(user_id, days=None):
 def get_strava_activity_details(activity_id):
     print(u"Getting details for activity %d" % activity_id)
     activity = Activity.objects.get(id=activity_id)
-    client = StravaClientMixin().get_strava_client(activity.user)
+    client = StravaClientMixin().get_client(activity.user)
     act = client.get_activity(activity.external_id)
     activity.update_encoded_polyline(act.map.polyline)
     process_activity_tails.delay(activity_id=activity_id)
@@ -59,7 +57,7 @@ def get_strava_activity_details(activity_id):
 @app.task
 def retrieve_activities(days=None):
     users = User.objects.filter(
-        social_auth__provider='strava'
+        socialaccount__provider='strava'
     ).values_list('id', flat=True)
 
     for user in users: 

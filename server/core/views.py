@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from map.models import Grid
 
 from core.mixins import StravaClientMixin
+from core.models import User
 
 def index(request):
     return render(request, 'core/index.html')

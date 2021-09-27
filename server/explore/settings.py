@@ -188,7 +188,15 @@ SITE_ID = 1
 # SOCIAL_AUTH_STRAVA_SCOPE = ['activity:read_all']
 
 # Spatialite
-SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
+#SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'strava': {
+        'SCOPE': [
+            'activity:read_all'
+        ],
+    }
+}
 
 # Explore conf 
 MIN_NUMBER_OF_TILES_PER_SIDE = 6 # 6x6 grid 

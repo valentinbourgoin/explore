@@ -21,7 +21,7 @@ django-timezone-field==4.2.1
 djangorestframework==3.12.4
 djangorestframework-gis==0.17
 django-cors-headers==3.8.0
-dj_rest_auth==3.2.7
+dj_rest_auth
 django-allauth==0.45.0
 gunicorn==20.1.0
 idna==3.2

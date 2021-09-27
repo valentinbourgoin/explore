@@ -42,6 +42,8 @@ class Grid(geo_models.Model):
     )
     created_at = models.DateTimeField(auto_now=True)
     last_updated_at = models.DateTimeField(auto_now=True)
+    date_begin = models.DateTimeField(blank=True, null=True)
+    date_end = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return u"%s (%d tiles)" % (self.name, self.number_of_tiles_per_side)
