@@ -7,6 +7,8 @@ import GridService from '../services/grid'
 import styled from 'styled-components'
 import Container from '@material-ui/core/Container'
 
+import PullButton from '../components/pull-button'
+
 const Dashboard: NextPage = () => {
   const [grids, setGrids] = useState([]);
  
@@ -17,6 +19,7 @@ const Dashboard: NextPage = () => {
     };
 
     fetchData();
+    
   }, []);
 
 
@@ -24,6 +27,7 @@ const Dashboard: NextPage = () => {
     <>
       <Container maxWidth="sm">
         <h1>Dashboard</h1>
+        <PullButton />
         <p>Grids ouvertes</p>
         <ul>
         {grids.map((item, i) => (

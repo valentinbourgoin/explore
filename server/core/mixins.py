@@ -41,4 +41,4 @@ class StravaClientMixin(object):
     token.expires_at = make_aware(datetime.fromtimestamp(refresh['expires_at']))
     token.save()
 
-    return client
+    return Client(access_token=token.access_token)

@@ -9,16 +9,18 @@ from .models import Activity, User
 from core.mixins import StravaClientMixin
 from map.tasks import process_activity_tails
 
-@app.task
-def get_strava_activities_by_user(user_id, days=None):
+@app.task(bind=True)
+def get_activities_by_user(self, user_id, days=None):
     print(u"Getting order for user %d" % user_id)
     user = User.objects.get(id=user_id)
-    #todo Refacto
+
+    #todo Refacto : get all clients
     client = StravaClientMixin().get_client(user)
     if (not client):
         print (u'%s has no social token', user)
         return None
 
+    # @todo replace days by last pull at
     if (days): 
         end = arrow.utcnow()
         start = end.shift(days=(0-days))
@@ -30,14 +32,24 @@ def get_strava_activities_by_user(user_id, days=None):
         activity_iter = client.get_activities()
 
     try:
-        for activity in activity_iter: 
+        activity_nb = sum(1 for _ in activity_iter)
+        activity_processed = 0
+        print (u'%d activities to get' % activity_nb)
+        for activity in activity_iter:
             act, created = Activity.objects.get_or_create(
                 external_id=activity.id,
                 user=user
             )
             act.update_from_strava(activity)
             if (not act.polylines):
-                get_strava_activity_details.delay(activity_id=act.id)
+                get_activity_details.delay(activity_id=act.id)
+            
+            activity_processed += 1 
+            #@todo : set progress ? 
+            self.update_state(
+                state='PROGRESS', 
+                meta={'current': activity_processed, 'total': activity_nb
+            })
 
     except HTTPError as e:
         # todo : reach limit
@@ -45,7 +57,7 @@ def get_strava_activities_by_user(user_id, days=None):
         print(e)
 
 @app.task 
-def get_strava_activity_details(activity_id):
+def get_activity_details(activity_id):
     print(u"Getting details for activity %d" % activity_id)
     activity = Activity.objects.get(id=activity_id)
     client = StravaClientMixin().get_client(activity.user)
@@ -56,10 +68,7 @@ def get_strava_activity_details(activity_id):
 
 @app.task
 def retrieve_activities(days=None):
-    users = User.objects.filter(
-        socialaccount__provider='strava'
-    ).values_list('id', flat=True)
-
+    users = User.objects.all().values_list('id', flat=True)
     for user in users: 
-        get_strava_activities_by_user.delay(user_id=user, days=days)
+        get_activities_by_user.delay(user_id=user, days=days)
         print(u"Getting activities for user %d" % user)

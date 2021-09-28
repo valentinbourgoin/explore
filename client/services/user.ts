@@ -21,6 +21,17 @@ class UserService {
         }
         return false
     }
+
+    pullActivities = async () => {
+        const user = await this.getCurrentUser()
+        if (user.id) {
+            let result = await axios.get(
+                `${API_URL}/users/${user.id}/pull/`, 
+                { headers: AuthService.getAuthHeaders() }
+            ) 
+            return result.data
+        }
+    }
 }
 
 export default new UserService();
