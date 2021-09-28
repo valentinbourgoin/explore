@@ -4,9 +4,9 @@ from celery.utils.log import get_task_logger
 
 import arrow
 
-from .models import Activity, User
+from core.models import Activity, User
 from core.mixins import StravaClientMixin
-from map.tasks import process_activity_tails
+from tasks.tasks.process_activities import process_activity_tails
 from explore.celery import app
 
 logger = get_task_logger(__name__)
