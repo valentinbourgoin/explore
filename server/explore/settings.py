@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'django.contrib.sites',
     'django_celery_beat',
+    'django_celery_results',
     'leaflet',
     'rest_framework',
     'rest_framework.authtoken',
@@ -197,6 +198,9 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
     }
 }
+
+# Celery
+CELERY_RESULT_BACKEND = 'django-db'
 
 # Explore conf 
 MIN_NUMBER_OF_TILES_PER_SIDE = 6 # 6x6 grid 

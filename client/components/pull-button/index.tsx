@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Button from '@material-ui/core/Button';
 
 import UserService from '../../services/user'
+import TaskService from '../../services/task'
 
 const PullButton:React.FC = () => {
     const STATUS_NEUTRAL:string = "neutral"
@@ -14,19 +15,46 @@ const PullButton:React.FC = () => {
     const handlePull = async () => {
         setStatus(STATUS_LOADING)
         try {
-            const result = await UserService.pullActivities()
-            if (result.success) {
-                console.log(result.task_id)
-                setStatus(STATUS_SUCCESS)
+            const { success, task_id } = await UserService.pullActivities()
+            if (success) {
+                console.log(task_id)
+                getTaskStatus(task_id)
             } else {
                 setStatus(STATUS_ERROR)
             }
         } catch (e) {
             console.log(e)
             setStatus(STATUS_ERROR)
-        }
-        
+        }  
     }
+
+    // @todo : Websocket or long polling
+    const getTaskStatus = async (taskId:number) => {
+        const MAX_NUMBER_OF_ITERATIONS = 3
+        let i = 0
+        const interval = setInterval(async() => {
+            if (i++ >= MAX_NUMBER_OF_ITERATIONS) {
+                clearInterval(interval)
+                setStatus(STATUS_ERROR)
+            } else {
+                const { task_status } = await TaskService.getTaskDetails(taskId)
+                if (task_status === 'SUCCESS') {
+                    clearInterval(interval)
+                    setStatus(STATUS_SUCCESS)
+                }
+            }
+        }, 1000)
+    }
+
+    // Restore neutral status after success or error state
+    useEffect(() => {
+        if (status === STATUS_SUCCESS || status === STATUS_ERROR) {
+            setTimeout(() => {
+                setStatus(STATUS_NEUTRAL)
+            }, 5000)
+        }
+
+    }, [ status ])
 
     const getColor = (status:string) => {
         switch (status) {

@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from api.serializers import UserSerializer
 from api.permissions import IsAdminOrIsOwner
 from core.models import User
-from tasks.tasks.sync_activities import get_activities_by_user
+from tasks.sync_activities import get_activities_by_user
 
 class UserViewSet(viewsets.ViewSet):
     queryset = User.objects.all()
