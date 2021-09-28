@@ -1,23 +1,25 @@
 from requests.exceptions import HTTPError
 from stravalib.client import Client 
+from celery.utils.log import get_task_logger
 
 import arrow
-
-from explore.celery import app
 
 from .models import Activity, User
 from core.mixins import StravaClientMixin
 from map.tasks import process_activity_tails
+from explore.celery import app
+
+logger = get_task_logger(__name__)
 
 @app.task(bind=True)
 def get_activities_by_user(self, user_id, days=None):
-    print(u"Getting order for user %d" % user_id)
+    logger.info(u"Getting order for user %d" % user_id)
     user = User.objects.get(id=user_id)
 
     #todo Refacto : get all clients
     client = StravaClientMixin().get_client(user)
     if (not client):
-        print (u'%s has no social token', user)
+        logger.info(u'%s has no social token', user)
         return None
 
     # @todo replace days by last pull at
@@ -34,7 +36,7 @@ def get_activities_by_user(self, user_id, days=None):
     try:
         activity_nb = sum(1 for _ in activity_iter)
         activity_processed = 0
-        print (u'%d activities to get' % activity_nb)
+        logger.info(u'%d activities to get' % activity_nb)
         for activity in activity_iter:
             act, created = Activity.objects.get_or_create(
                 external_id=activity.id,
@@ -44,6 +46,11 @@ def get_activities_by_user(self, user_id, days=None):
             if (not act.polylines):
                 get_activity_details.delay(activity_id=act.id)
             
+            if (created):
+                logger.info(u'New activity created: %s' % act.name)
+            else: 
+                logger.info(u'Activity updated: %s' % act.name)
+
             activity_processed += 1 
             #@todo : set progress ? 
             self.update_state(
@@ -54,11 +61,11 @@ def get_activities_by_user(self, user_id, days=None):
     except HTTPError as e:
         # todo : reach limit
         # social.get().delete()
-        print(e)
+        logger.error(e)
 
 @app.task 
 def get_activity_details(activity_id):
-    print(u"Getting details for activity %d" % activity_id)
+    logger.info(u"Getting details for activity %d" % activity_id)
     activity = Activity.objects.get(id=activity_id)
     client = StravaClientMixin().get_client(activity.user)
     act = client.get_activity(activity.external_id)
@@ -69,6 +76,8 @@ def get_activity_details(activity_id):
 @app.task
 def retrieve_activities(days=None):
     users = User.objects.all().values_list('id', flat=True)
+    logger.info(u"Activity pull order for %d users" % len(users))
+
     for user in users: 
         get_activities_by_user.delay(user_id=user, days=days)
-        print(u"Getting activities for user %d" % user)
+        logger.info(u"Getting activities for user %d" % user)

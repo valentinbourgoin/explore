@@ -1,11 +1,13 @@
+from celery.utils.log import get_task_logger
+
+from core.models import Activity
 from explore.celery import app
 
-from core.models import Activity, User
-from .models import Grid, Tile
+logger = get_task_logger(__name__)
 
 @app.task 
 def process_activity_tails(activity_id):
-    print(u"Mapping activity %d" % activity_id)
+    logger.info(u"Mapping activity %d" % activity_id)
     activity = Activity.objects.get(id=activity_id)
     # @todo custom queryset
     grids = activity.user.registered_grids.filter(
@@ -13,11 +15,11 @@ def process_activity_tails(activity_id):
         date_begin__lte=activity.start_date,
         date_end__gte=activity.start_date
     ) 
-    print(u"Number of grids to process: %d" % len(grids))
+    logger.info(u"Number of grids to process: %d" % len(grids))
     for grid in grids:
-        tiles = grid.tiles.filter(status=0) #@todo custom queryset
-        print(u"Number of still available tiles for this grid: %d" % len(tiles))
+        tiles = grid.tiles.filter(status=0) # @todo custom queryset
+        logger.info(u"Number of still available tiles for this grid: %d" % len(tiles))
         for tile in tiles:
             if tile.points.intersects(activity.polylines):
-                print(u"New tile locked: %d. Nice job %s" % (tile.id, activity.user))
+                logger.info(u"New tile locked: %d. Nice job %s" % (tile.id, activity.user))
                 tile.lock(activity)
