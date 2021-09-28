@@ -1,0 +1,37 @@
+{
+  "name": "explore",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@material-ui/core": "^5.0.0-beta.5",
+    "@mui/icons-material": "^5.0.0",
+    "@mui/lab": "next",
+    "@mui/material": "next",
+    "@mui/styled-engine-sc": "next",
+    "@types/leaflet": "^1.7.5",
+    "axios": "^0.21.4",
+    "leaflet": "^1.7.1",
+    "leaflet-defaulticon-compatibility": "^0.1.1",
+    "leaflet-geosearch": "^3.5.0",
+    "next": "11.1.2",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-leaflet": "^3.2.1",
+    "styled-components": "^5.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "17.0.21",
+    "babel-plugin-styled-components": "^1.13.2",
+    "eslint": "7.32.0",
+    "eslint-config-next": "11.1.2",
+    "typescript": "4.4.3"
+  }
+}
