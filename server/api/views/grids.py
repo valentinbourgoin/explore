@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 
 from django.shortcuts import get_object_or_404
 
-from api.serializers import GridSerializer, TileSerializer
+from api.serializers.grids import GridSerializer, TileSerializer
 from map.models import Grid
 
 class GridViewSet(viewsets.ViewSet):
