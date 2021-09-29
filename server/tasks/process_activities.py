@@ -1,7 +1,7 @@
 from celery.utils.log import get_task_logger
 
 from core.models import Activity
-from core.mixins import StravaClientMixin
+from core.backend.strava import StravaClient
 
 from explore.celery import app
 
@@ -11,7 +11,7 @@ logger = get_task_logger(__name__)
 def process_activity(activity_id):
     logger.info(u"Getting details for activity %d" % activity_id)
     activity = Activity.objects.get(id=activity_id)
-    client = StravaClientMixin().get_client(activity.user)
+    client = StravaClient(activity.user).client
     act = client.get_activity(activity.external_id)
     activity.update_encoded_polyline(act.map.polyline)
 

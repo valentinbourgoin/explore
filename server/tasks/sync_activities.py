@@ -3,7 +3,7 @@ from celery.utils.log import get_task_logger
 from allauth.socialaccount.models import SocialApp
 
 from core.models import Activity, User, UserSync
-from core.mixins import StravaClientMixin
+from core.backend.strava import StravaClient
 from tasks.process_activities import process_activity
 from explore.celery import app
 
@@ -16,7 +16,7 @@ def get_activities_by_user(self, user_id):
     result = {}
 
     #todo Refacto : get all clients
-    client = StravaClientMixin().get_client(user)
+    client = StravaClient(user).client
     if (not client):
         logger.info(u'%s has no social token', user)
         return None
@@ -29,10 +29,10 @@ def get_activities_by_user(self, user_id):
         )
     except UserSync.DoesNotExist:
         usersync = UserSync()
-        usersync.last_update = user.date_joined
+        usersync.last_updated_at = user.date_joined
 
     activity_iter = client.get_activities(
-        after=usersync.last_update
+        after=usersync.last_updated_at
     )
     
     try:

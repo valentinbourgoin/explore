@@ -1,7 +1,8 @@
-from stravalib.client import Client as StravaClient
+from stravalib.client import Client as Stravalib
 from allauth.socialaccount.models import SocialToken, SocialApp
 from django.utils import timezone
 from django.utils.timezone import make_aware
+from core.backend.abstract import AbstractClient
 
 from explore import settings
 from datetime import datetime
@@ -10,25 +11,25 @@ from datetime import datetime
 Strava client mixin class
 Use stravalib methods to call Strava API
 '''
-class StravaClient():
+class StravaClient(AbstractClient):
   provider_name = "strava"
 
-  def get_client(self, user):
-    token = self.get_social_token(user)
-    client = StravaClient(access_token=token.token)      
+  def get_client(self):
+    token = self.get_social_token()
+    self.client = Stravalib(access_token=token.token)      
 
     if (token.expires_at <= timezone.now()):
-      return self.refresh_token(token, client)
+      self.refresh_token(token)
       
-    return client
+    return self.client
 
-  def refresh_token(self, token, client): 
+  def refresh_token(self, token): 
     # Refresh stravalib client
     social_app = SocialApp.objects.get(
       provider=self.provider_name,
       sites__id=settings.SITE_ID
     )
-    refresh = client.refresh_access_token(
+    refresh = self.client.refresh_access_token(
       social_app.client_id,
       social_app.secret,
       token.token_secret
@@ -40,4 +41,4 @@ class StravaClient():
       make_aware(datetime.fromtimestamp(refresh['expires_at']))
     )
     
-    return StravaClient(access_token=token.access_token)
+    self.client = StravaClient(access_token=token.access_token)
