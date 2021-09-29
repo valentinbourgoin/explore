@@ -6,14 +6,14 @@ from celery.result import AsyncResult
 
 from django.shortcuts import get_object_or_404
 
-#from api.serializers.users import UserSerializer
+from api.serializers.users import UserSerializer
 from api.permissions import IsAdminOrIsOwner
 from core.models import User
 from tasks.sync_activities import get_activities_by_user
 
 class UserViewSet(viewsets.ViewSet):
     queryset = User.objects.all()
- #   serializer_class = UserSerializer
+    serializer_class = UserSerializer
     permission_classes = [ permissions.IsAuthenticated ]
     
     @action(methods=['get'], detail=False)
@@ -26,8 +26,7 @@ class UserViewSet(viewsets.ViewSet):
     def pull(self, request, pk=None):
         user = get_object_or_404(User, pk=pk)
         task = get_activities_by_user.delay(
-            user_id=user.id, 
-            days=3 # @todo : since last pull
+            user_id=user.id
         )
         return Response({
             "success": True, 

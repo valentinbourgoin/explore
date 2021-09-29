@@ -1,13 +1,50 @@
 from django.db import models
 from django.contrib.gis.db import models as geo_models
 from django.contrib.auth.models import AbstractUser
-
-import polyline
+from django.utils.translation import gettext_lazy as _
 from django.contrib.gis.geos import LineString
 
+import polyline
+from allauth.socialaccount.models import SocialApp
+
+'''
+Explore user model
+Extended Django auth model
+'''
 class User(AbstractUser):
     avatar = models.ImageField(upload_to="avatar")
 
+'''
+UserSync model
+Link between User and social provider 
+Used to store API response information / status 
+'''
+class UserSync(models.Model): 
+    app = models.ForeignKey(
+        SocialApp, 
+        on_delete=models.CASCADE,
+        related_name='user_syncs'
+    )
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='user_syncs'
+    )
+    last_updated_at = models.DateTimeField(auto_now_add=True)
+    last_response = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ("app", "user")
+        verbose_name = _("User sync")
+
+    def __str__(self):
+        return u'%s (%s)' % (self.user, self.app)
+
+'''
+Sport activity model
+Linked to a user and a provider 
+Used to store both sport and GPS data
+'''
 class Activity(geo_models.Model):
     user = models.ForeignKey(
         User, 

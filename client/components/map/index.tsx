@@ -24,8 +24,8 @@ const Map:React.FC = (props) => {
 
         const isTileLockedByUser = (feature) => {
             // @todo
-            return isTileLocked(feature) 
-                && feature.properties.activity_related.user.username === 'valentin'
+            // return isTileLocked(feature) 
+            // && feature.properties.activity_related.user.username === 'valentin'
         }
 
         const getTileColor = (feature) => {
