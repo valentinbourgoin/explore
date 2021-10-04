@@ -183,14 +183,6 @@ AUTH_USER_MODEL = 'core.User'
 # Django sites
 SITE_ID = 1
 
-# Strava auth
-# SOCIAL_AUTH_STRAVA_KEY = '3032'
-# SOCIAL_AUTH_STRAVA_SECRET = 'd89b6f058a6edb745ed579c21ac8764b914f1ff4'
-# SOCIAL_AUTH_STRAVA_SCOPE = ['activity:read_all']
-
-# Spatialite
-#SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
-
 SOCIALACCOUNT_PROVIDERS = {
     'strava': {
         'SCOPE': [
