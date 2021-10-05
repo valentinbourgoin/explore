@@ -1,34 +1,40 @@
+from datetime import datetime
 from stravalib.client import Client as Stravalib
-from allauth.socialaccount.models import SocialToken, SocialApp
+from allauth.socialaccount.models import SocialApp
 from django.utils import timezone
 from django.utils.timezone import make_aware
-from core.backend.abstract import AbstractClient
 
 from explore import settings
-from datetime import datetime
+from core.backend.abstract import AbstractClient
 
-'''
-Strava client mixin class
-Use stravalib methods to call Strava API
-'''
 class StravaClient(AbstractClient):
+  '''
+  Strava client mixin class
+  Use stravalib methods to call Strava API
+  '''
   provider_name = "strava"
 
   def get_client(self):
     token = self.get_social_token()
-    self.client = Stravalib(access_token=token.token)      
+    if (token is not None):
+      self.client = Stravalib(access_token=token.token)      
 
-    if (token.expires_at <= timezone.now()):
-      self.refresh_token(token)
+      if (token.expires_at <= timezone.now()):
+        self.refresh_token(token)
       
-    return self.client
+      return self.client
+    return None
 
   def refresh_token(self, token): 
     # Refresh stravalib client
-    social_app = SocialApp.objects.get(
-      provider=self.provider_name,
-      sites__id=settings.SITE_ID
-    )
+    try:
+      social_app = SocialApp.objects.get(
+        provider=self.provider_name,
+        sites__id=settings.SITE_ID
+      )
+    except SocialApp.DoesNotExist:
+      return None
+
     refresh = self.client.refresh_access_token(
       social_app.client_id,
       social_app.secret,
