@@ -1,11 +1,9 @@
-import json
 from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.urls import reverse
 
 from core.models import User
-from api.views.users import UserViewSet
 
 class UserTest(APITestCase):
     def setUp(self): 
@@ -51,7 +49,7 @@ class UserTest(APITestCase):
         self.assertEqual(response_auth.status_code, status.HTTP_200_OK)
         self.assertEqual(response_auth.data['success'], True)
 
-        # Check if /api/users/123/pull returns a 404 error
+        # Check if /api/users/123/pull returns a 403 error
         url_error = reverse('user-pull', kwargs={'pk': 123})
         response_error = client.get(url_error)
         self.assertEqual(response_error.status_code, status.HTTP_403_FORBIDDEN)
